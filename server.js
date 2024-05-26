@@ -16,12 +16,12 @@ const PORT = 5000;
 
 const updateLEDStatus1 = async (methane) => {
     try {
-        const led = await methane.findOne();
-        if (methane) {
-            methane.methane = status; // Update status1 field
-            await methane.save();
+        const led = await MAmount.findOne();
+        if (MAmount) {
+            MAmount.MAmount = status; // Update status1 field
+            await MAmount.save();
         } else {
-            await Methane.create({ methane: status }); // Create new LED document with status1
+            await MAmount.create({ MAmount: status }); // Create new LED document with status1
         }
     } catch (error) {
         console.error('Error updating LED status1:', error);
@@ -63,7 +63,7 @@ const updateLEDStatus3 = async (status) => {
 
 // Update status1 for led1
 app.get('/api/methane', (req, res) => {
-    updateLEDStatus1(1); // Update status1 to 1 for led1
+    updateLEDStatus1(100); // Update status1 to 1 for led1
     res.json({ message: 'methane updated' });
 });
 
