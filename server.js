@@ -21,7 +21,7 @@ const updateLEDStatus1 = async (methane) => {
             methane.methane = status; // Update status1 field
             await methane.save();
         } else {
-            await Methane.create({ Methane: status }); // Create new LED document with status1
+            await Methane.create({ methane: status }); // Create new LED document with status1
         }
     } catch (error) {
         console.error('Error updating LED status1:', error);
