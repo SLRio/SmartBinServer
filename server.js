@@ -65,7 +65,7 @@ const updateLEDStatus3 = async (status) => {
 
 // Update status1 for led1
 app.get('/api/methane', (req, res) => {
-    updateLEDStatus1(100); // Update status1 to 1 for led1
+    updateLEDStatus1(100,200); // Update status1 to 1 for led1
     res.json({ message: 'methane updated' });
 });
 
