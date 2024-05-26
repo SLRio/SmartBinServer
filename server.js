@@ -14,12 +14,12 @@ app.use(express.json());
 app.use(cors());
 const PORT = 5000;
 
-const updateLEDStatus1 = async (status) => {
+const updateLEDStatus1 = async (methane) => {
     try {
-        const led = await Methane.findOne();
-        if (led) {
-            Methane.Methane = status; // Update status1 field
-            await Methane.save();
+        const led = await methane.findOne();
+        if (methane) {
+            methane.methane = status; // Update status1 field
+            await methane.save();
         } else {
             await Methane.create({ Methane: status }); // Create new LED document with status1
         }
@@ -64,7 +64,7 @@ const updateLEDStatus3 = async (status) => {
 // Update status1 for led1
 app.get('/api/methane', (req, res) => {
     updateLEDStatus1(1); // Update status1 to 1 for led1
-    res.json({ message: 'LED1 turned on' });
+    res.json({ message: 'methane updated' });
 });
 
 app.get('/api/led1/off', (req, res) => {
