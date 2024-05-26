@@ -18,10 +18,10 @@ const updateLEDStatus1 = async (status) => {
     try {
         const led = await Methane.findOne();
         if (led) {
-            Methane.status1 = status; // Update status1 field
+            Methane.Methane = status; // Update status1 field
             await Methane.save();
         } else {
-            await Methane.create({ status1: status }); // Create new LED document with status1
+            await Methane.create({ Methane: status }); // Create new LED document with status1
         }
     } catch (error) {
         console.error('Error updating LED status1:', error);
@@ -62,7 +62,7 @@ const updateLEDStatus3 = async (status) => {
 // Routes for ledw
 
 // Update status1 for led1
-app.get('/api/led1/on', (req, res) => {
+app.get('/api/methane', (req, res) => {
     updateLEDStatus1(1); // Update status1 to 1 for led1
     res.json({ message: 'LED1 turned on' });
 });
