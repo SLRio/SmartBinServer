@@ -58,7 +58,19 @@ const updateLEDStatus3 = async (status) => {
     }
 };
 
-
+app.get('/api/smartbin', asyncHandler(async (req, res) => {
+    try {
+        const smartBin = await SmartBin.findOne(); // Assuming there's only one document in the collection
+        if (smartBin) {
+            res.json(smartBin); // Send the SmartBin data as a JSON response
+        } else {
+            res.status(404).json({ message: 'SmartBin data not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching SmartBin data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}));
 
 
 // Routes for ledw
