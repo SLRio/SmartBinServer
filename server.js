@@ -14,19 +14,21 @@ app.use(express.json());
 app.use(cors());
 const PORT = 5000;
 
-const updateLEDStatus1 = async (methane) => {
+const updateLEDStatus1 = async (mAmount, gAmount) => {
     try {
-        const led = await MAmount.findOne();
-        if (MAmount) {
-            MAmount.MAmount = status; // Update status1 field
-            await MAmount.save();
+        const smartBin = await SmartBin.findOne(); // Assuming there's only one document in the collection
+        if (smartBin) {
+            smartBin.MAmount = mAmount; // Update MAmount field
+            smartBin.GAmount = gAmount; // Update GAmount field
+            await smartBin.save();
         } else {
-            await MAmount.create({ MAmount: status }); // Create new LED document with status1
+            await SmartBin.create({ MAmount: mAmount, GAmount: gAmount }); // Create new SmartBin document with MAmount and GAmount
         }
     } catch (error) {
-        console.error('Error updating LED status1:', error);
+        console.error('Error updating SmartBin data:', error);
     }
 };
+
 
 const updateLEDStatus2 = async (status) => {
     try {
