@@ -1,1 +1,1 @@
-# SmartBinServer
+# smart-home-server
