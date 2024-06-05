@@ -5,7 +5,6 @@ import connectDB from "./db.js";
 import asyncHandler from "express-async-handler";
 import Led from "./ledModal.js";
 
-
 dotenv.config();
 
 connectDB();
@@ -28,7 +27,6 @@ const updateLEDStatus1 = async (mAmount, gAmount) => {
         console.error('Error updating SmartBin data:', error);
     }
 };
-
 
 const updateLEDStatus2 = async (status) => {
     try {
@@ -72,13 +70,12 @@ app.get('/api/smartbin', asyncHandler(async (req, res) => {
     }
 }));
 
-
-// Routes for ledw
+// Routes for led
 
 // Update status1 for led1
 app.get('/api/methane', (req, res) => {
-    updateLEDStatus1(100,200); // Update status1 to 1 for led1
-    res.json({ message: 'methane updated' });
+    updateLEDStatus1(100, 200); // Update status1 to 1 for led1
+    res.json({ message: 'Methane updated' });
 });
 
 app.get('/api/led1/off', (req, res) => {
@@ -87,15 +84,15 @@ app.get('/api/led1/off', (req, res) => {
 });
 
 // Update status2 for led2
-app.get('/api/led2/on', (req, res) => {
-    updateLEDStatus2(1); // Update status2 to 1 for led2
-    res.json({ message: 'LED2 turned on' });
-});
-
-app.get('/api/led2/off', (req, res) => {
-    updateLEDStatus2(0); // Update status2 to 0 for led2
-    res.json({ message: 'LED2 turned off' });
-});
+app.post('/api/led2', asyncHandler(async (req, res) => {
+    const { status } = req.body;
+    if (status !== undefined) {
+        await updateLEDStatus2(status);
+        res.json({ message: `LED2 status updated to ${status}` });
+    } else {
+        res.status(400).json({ message: 'Invalid request: status is required' });
+    }
+}));
 
 // Update status3 for led3
 app.get('/api/led3/on', (req, res) => {
@@ -107,8 +104,6 @@ app.get('/api/led3/off', (req, res) => {
     updateLEDStatus3(0); // Update status3 to 0 for led3
     res.json({ message: 'LED3 turned off' });
 });
-
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}...`);
