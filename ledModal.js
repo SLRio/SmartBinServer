@@ -1,17 +1,13 @@
 import mongoose from 'mongoose';
 
 const ledSchema = new mongoose.Schema({
-    status1: {
-        type: Number,
-        required: true
-    },
     status2: {
         type: Number,
-        required: true
+        default: 0
     },
     status3: {
         type: Number,
-        required: true
+        default: 0
     }
 });
 
