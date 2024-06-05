@@ -3,7 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from "./db.js";
 import asyncHandler from "express-async-handler";
-import Led from "./ledModal.js";
+import SmartBin from "./smartBinModel.js"; // Ensure you import the SmartBin model
+import Led from "./ledModel.js"; // Ensure you import the Led model
 
 dotenv.config();
 
@@ -13,16 +14,21 @@ app.use(express.json());
 app.use(cors());
 const PORT = 5000;
 
+// Utility function to find or create a SmartBin document
+const findOrCreateSmartBin = async () => {
+    let smartBin = await SmartBin.findOne();
+    if (!smartBin) {
+        smartBin = await SmartBin.create({ MAmount: 0, GAmount: 0 });
+    }
+    return smartBin;
+};
+
 const updateLEDStatus1 = async (mAmount, gAmount) => {
     try {
-        const smartBin = await SmartBin.findOne(); // Assuming there's only one document in the collection
-        if (smartBin) {
-            smartBin.MAmount = mAmount; // Update MAmount field
-            smartBin.GAmount = gAmount; // Update GAmount field
-            await smartBin.save();
-        } else {
-            await SmartBin.create({ MAmount: mAmount, GAmount: gAmount }); // Create new SmartBin document with MAmount and GAmount
-        }
+        const smartBin = await findOrCreateSmartBin(); // Use the utility function
+        smartBin.MAmount = mAmount; // Update MAmount field
+        smartBin.GAmount = gAmount; // Update GAmount field
+        await smartBin.save();
     } catch (error) {
         console.error('Error updating SmartBin data:', error);
     }
@@ -58,32 +64,28 @@ const updateLEDStatus3 = async (status) => {
 
 app.get('/api/smartbin', asyncHandler(async (req, res) => {
     try {
-        const smartBin = await SmartBin.findOne(); // Assuming there's only one document in the collection
-        if (smartBin) {
-            res.json(smartBin); // Send the SmartBin data as a JSON response
-        } else {
-            res.status(404).json({ message: 'SmartBin data not found' });
-        }
+        const smartBin = await findOrCreateSmartBin(); // Use the utility function
+        res.json(smartBin); // Send the SmartBin data as a JSON response
     } catch (error) {
         console.error('Error fetching SmartBin data:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 }));
 
-// Routes for led
+// Routes for LED
 
-// Update status1 for led1
+// Update status1 for LED1
 app.get('/api/methane', (req, res) => {
-    updateLEDStatus1(100, 200); // Update status1 to 1 for led1
+    updateLEDStatus1(100, 200); // Update status1 to 1 for LED1
     res.json({ message: 'Methane updated' });
 });
 
 app.get('/api/led1/off', (req, res) => {
-    updateLEDStatus1(0); // Update status1 to 0 for led1
+    updateLEDStatus1(0, 0); // Update status1 to 0 for LED1
     res.json({ message: 'LED1 turned off' });
 });
 
-// Update status2 for led2
+// Update status2 for LED2
 app.post('/api/led2', asyncHandler(async (req, res) => {
     const { status } = req.body;
     if (status !== undefined) {
@@ -94,14 +96,14 @@ app.post('/api/led2', asyncHandler(async (req, res) => {
     }
 }));
 
-// Update status3 for led3
+// Update status3 for LED3
 app.get('/api/led3/on', (req, res) => {
-    updateLEDStatus3(1); // Update status3 to 1 for led3
+    updateLEDStatus3(1); // Update status3 to 1 for LED3
     res.json({ message: 'LED3 turned on' });
 });
 
 app.get('/api/led3/off', (req, res) => {
-    updateLEDStatus3(0); // Update status3 to 0 for led3
+    updateLEDStatus3(0); // Update status3 to 0 for LED3
     res.json({ message: 'LED3 turned off' });
 });
 
