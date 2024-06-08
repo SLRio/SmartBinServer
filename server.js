@@ -16,9 +16,9 @@ const PORT = 5000;
 
 // Utility function to find or create a SmartBin document
 const findOrCreateSmartBin = async () => {
-    let smartBin = await smartbins.findOne();
+    let smartBin = await smartbin.findOne();
     if (!smartBin) {
-        smartBin = await smartbins.create({ MAmount: 0, GAmount: 0 });
+        smartBin = await smartbin.create({ MAmount: 0, GAmount: 0 });
     }
     return smartBin;
 };
