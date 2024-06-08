@@ -23,26 +23,35 @@ const findOrCreateSmartBin = async () => {
     return smartBin;
 };
 
-const updateLEDStatus1 = async (mAmount, gAmount) => {
+const updateMAmount = async (mAmount) => {
     try {
-        const smartBin = await findOrCreateSmartBin(); // Use the utility function
-        smartBin.MAmount = mAmount; // Update MAmount field
-        smartBin.GAmount = gAmount; // Update GAmount field
+        const smartBin = await findOrCreateSmartBin();
+        smartBin.MAmount = mAmount;
         await smartBin.save();
     } catch (error) {
-        console.error('Error updating SmartBin data:', error);
+        console.error('Error updating MAmount:', error);
+    }
+};
+
+const updateGAmount = async (gAmount) => {
+    try {
+        const smartBin = await findOrCreateSmartBin();
+        smartBin.GAmount = gAmount;
+        await smartBin.save();
+    } catch (error) {
+        console.error('Error updating GAmount:', error);
     }
 };
 
 const updateLEDStatus2 = async (status) => {
     try {
-        const led = await Led.findOne();
+        let led = await Led.findOne();
         if (led) {
-            led.status2 = status; // Update status2 field
-            await led.save();
+            led.status2 = status;
         } else {
-            await Led.create({ status2: status }); // Create new LED document with status2
+            led = new Led({ status2: status });
         }
+        await led.save();
     } catch (error) {
         console.error('Error updating LED status2:', error);
     }
@@ -50,13 +59,13 @@ const updateLEDStatus2 = async (status) => {
 
 const updateLEDStatus3 = async (status) => {
     try {
-        const led = await Led.findOne();
+        let led = await Led.findOne();
         if (led) {
-            led.status3 = status; // Update status3 field
-            await led.save();
+            led.status3 = status;
         } else {
-            await Led.create({ status3: status }); // Create new LED document with status3
+            led = new Led({ status3: status });
         }
+        await led.save();
     } catch (error) {
         console.error('Error updating LED status3:', error);
     }
@@ -64,48 +73,97 @@ const updateLEDStatus3 = async (status) => {
 
 app.get('/api/smartbin', asyncHandler(async (req, res) => {
     try {
-        const smartBin = await findOrCreateSmartBin(); // Use the utility function
-        res.json(smartBin); // Send the SmartBin data as a JSON response
+        const smartBin = await findOrCreateSmartBin();
+        res.json(smartBin);
     } catch (error) {
         console.error('Error fetching SmartBin data:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 }));
 
+// Routes for SmartBin
+
+// Update MAmount
+app.post('/api/smartbin/mamount', asyncHandler(async (req, res) => {
+    const { mAmount } = req.body;
+    if (mAmount !== undefined) {
+        try {
+            await updateMAmount(mAmount);
+            res.json({ message: `MAmount updated to ${mAmount}` });
+        } catch (error) {
+            console.error('Error updating MAmount:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    } else {
+        res.status(400).json({ message: 'Invalid request: mAmount is required' });
+    }
+}));
+
+// Update GAmount
+app.post('/api/smartbin/gamount', asyncHandler(async (req, res) => {
+    const { gAmount } = req.body;
+    if (gAmount !== undefined) {
+        try {
+            await updateGAmount(gAmount);
+            res.json({ message: `GAmount updated to ${gAmount}` });
+        } catch (error) {
+            console.error('Error updating GAmount:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    } else {
+        res.status(400).json({ message: 'Invalid request: gAmount is required' });
+    }
+}));
+
 // Routes for LED
 
-// Update status1 for LED1
-app.get('/api/methane', (req, res) => {
-    updateLEDStatus1(100, 200); // Update status1 to 1 for LED1
-    res.json({ message: 'Methane updated' });
-});
-
-app.get('/api/led1/off', (req, res) => {
-    updateLEDStatus1(0, 0); // Update status1 to 0 for LED1
-    res.json({ message: 'LED1 turned off' });
-});
+app.get('/api/led1/off', asyncHandler(async (req, res) => {
+    try {
+        await updateMAmount(0);
+        await updateGAmount(0);
+        res.json({ message: 'LED1 turned off' });
+    } catch (error) {
+        console.error('Error turning off LED1:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}));
 
 // Update status2 for LED2
 app.post('/api/led2', asyncHandler(async (req, res) => {
     const { status } = req.body;
     if (status !== undefined) {
-        await updateLEDStatus2(status);
-        res.json({ message: `LED2 status updated to ${status}` });
+        try {
+            await updateLEDStatus2(status);
+            res.json({ message: `LED2 status updated to ${status}` });
+        } catch (error) {
+            console.error('Error updating LED2:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
     } else {
         res.status(400).json({ message: 'Invalid request: status is required' });
     }
 }));
 
 // Update status3 for LED3
-app.get('/api/led3/on', (req, res) => {
-    updateLEDStatus3(1); // Update status3 to 1 for LED3
-    res.json({ message: 'LED3 turned on' });
-});
+app.get('/api/led3/on', asyncHandler(async (req, res) => {
+    try {
+        await updateLEDStatus3(1);
+        res.json({ message: 'LED3 turned on' });
+    } catch (error) {
+        console.error('Error turning on LED3:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}));
 
-app.get('/api/led3/off', (req, res) => {
-    updateLEDStatus3(0); // Update status3 to 0 for LED3
-    res.json({ message: 'LED3 turned off' });
-});
+app.get('/api/led3/off', asyncHandler(async (req, res) => {
+    try {
+        await updateLEDStatus3(0);
+        res.json({ message: 'LED3 turned off' });
+    } catch (error) {
+        console.error('Error turning off LED3:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}));
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}...`);
